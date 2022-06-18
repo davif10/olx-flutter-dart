@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:olx/model/usuario.dart';
 import 'package:olx/view/input_customizado.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 
-class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  State<Home> createState() => _HomeState();
+  State<Login> createState() => _LoginState();
 }
 
-class _HomeState extends State<Home> {
+class _LoginState extends State<Login> {
   bool _cadastrar = false;
   TextEditingController _controllerEmail =
       TextEditingController(text: "teste@teste.com");
@@ -25,7 +24,6 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff9c27b0),
         title: Text(""),
       ),
       body: Container(
@@ -132,14 +130,14 @@ class _HomeState extends State<Home> {
     auth.createUserWithEmailAndPassword(
         email: usuario.email,
         password: usuario.senha).then((value) {
-        print("Value: $value");
+      Navigator.pushReplacementNamed(context, "/");
     });
   }
 
   _logarUsuario(Usuario usuario){
     FirebaseAuth auth = FirebaseAuth.instance;
     auth.signInWithEmailAndPassword(email: usuario.email, password: usuario.senha).then((value) {
-
+      Navigator.pushReplacementNamed(context, "/");
     });
   }
 }

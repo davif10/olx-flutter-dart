@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:olx/view/anuncios.dart';
-import 'package:olx/view/login.dart';
+import 'package:olx/views/anuncios.dart';
+import 'package:olx/views/login.dart';
+import 'package:olx/views/meus_anuncios.dart';
 
 class RouteGenerator{
   static Route<dynamic>? generateRoute(RouteSettings settings){
@@ -13,6 +14,12 @@ class RouteGenerator{
       case "/login":
         return MaterialPageRoute(
             builder: (_) => Login());
+      case "/meus-anuncios":
+        return MaterialPageRoute(
+            builder: (_) => MeusAnuncios());
+      case "/novo-anuncio":
+        return MaterialPageRoute(
+            builder: (_) => MeusAnuncios());
       default: _erroRota();
     }
 

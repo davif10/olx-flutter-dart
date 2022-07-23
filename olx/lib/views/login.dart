@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:olx/model/usuario.dart';
-import 'package:olx/view/input_customizado.dart';
+import 'package:olx/models/usuario.dart';
+import 'package:olx/views/input_customizado.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {

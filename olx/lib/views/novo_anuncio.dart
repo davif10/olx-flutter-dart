@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:olx/views/widgets/botao_customizado.dart';
+import 'package:validadores/Validador.dart';
 
 class NovoAnuncio extends StatefulWidget {
   const NovoAnuncio({Key? key}) : super(key: key);
@@ -14,6 +16,17 @@ class NovoAnuncio extends StatefulWidget {
 class _NovoAnuncioState extends State<NovoAnuncio> {
   final _formKey = GlobalKey<FormState>();
   List<XFile> _listaImagens = [];
+  List<DropdownMenuItem<String>> _listaItensDropEstados = [];
+  List<DropdownMenuItem<String>> _listaItensDropCategorias = [];
+
+  String? _itemSelecionadoEstado;
+  String? _itemSelecionadoCategoria;
+
+  @override
+  void initState() {
+    _carregarItensDropDown();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -128,7 +141,44 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
                   },
                 ),
                 Row(
-                  children: [Text("Estado"), Text("Categoria")],
+                  children: [
+                    Expanded(child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: DropdownButtonFormField(
+                        value: _itemSelecionadoEstado,
+                        hint: Text("Estados"),
+                        style: TextStyle(fontSize: 20,
+                        color: Colors.black),
+                        items: _listaItensDropEstados,
+                        validator: (String? value){
+                          return Validador().add(Validar.OBRIGATORIO, msg: "Campo obrigatório").valido(value);
+                        },
+                        onChanged: (String? value) {
+                          setState((){
+                            _itemSelecionadoEstado = value ?? "";
+                          });
+                        },
+                      )
+                    )),
+                    Expanded(child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: DropdownButtonFormField(
+                          value: _itemSelecionadoCategoria,
+                          hint: Text("Categorias"),
+                          style: TextStyle(fontSize: 20,
+                              color: Colors.black),
+                          items: _listaItensDropCategorias,
+                          validator: (String? value){
+                            return Validador().add(Validar.OBRIGATORIO, msg: "Campo obrigatório").valido(value);
+                          },
+                          onChanged: (String? value) {
+                            setState((){
+                              _itemSelecionadoCategoria = value ?? "";
+                            });
+                          },
+                        )
+                    )),
+                  ],
                 ),
                 Text("Caixas de Texto"),
                 BotaoCustomizado(
@@ -154,4 +204,31 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
       });
     }
   }
+
+  _carregarItensDropDown(){
+
+    _listaItensDropCategorias.add(
+      DropdownMenuItem(child: Text("Automóvel"), value: "auto",)
+    );
+    _listaItensDropCategorias.add(
+        DropdownMenuItem(child: Text("Imóvel"), value: "imovel",)
+    );
+    _listaItensDropCategorias.add(
+        DropdownMenuItem(child: Text("Eletrônicos"), value: "eletro",)
+    );
+
+    _listaItensDropCategorias.add(
+        DropdownMenuItem(child: Text("Moda"), value: "moda",)
+    );
+    _listaItensDropCategorias.add(
+        DropdownMenuItem(child: Text("Esportes"), value: "esportes",)
+    );
+
+    for(var estado in Estados.listaEstadosSigla){
+      _listaItensDropEstados.add(
+          DropdownMenuItem(child: Text(estado), value: estado,)
+      );
+    }
+  }
+
 }

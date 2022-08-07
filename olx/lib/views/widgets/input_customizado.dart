@@ -10,7 +10,8 @@ class InputCustomizado extends StatelessWidget {
       this.type = TextInputType.text,
       this.inputFormatters,
       this.maxLines,
-      this.validator
+      this.validator,
+      this.onSaved,
       });
 
   TextEditingController controller;
@@ -21,6 +22,7 @@ class InputCustomizado extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLines;
   String? Function(String?)? validator;
+  String? Function(String?)? onSaved;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +34,7 @@ class InputCustomizado extends StatelessWidget {
       inputFormatters: this.inputFormatters,
       validator: this.validator,
       maxLines: this.maxLines,
+      onSaved: this.onSaved,
       style: TextStyle(fontSize: 20),
       decoration: InputDecoration(
           contentPadding: EdgeInsets.fromLTRB(32, 16, 32, 16),

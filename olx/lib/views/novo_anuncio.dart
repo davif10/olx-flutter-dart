@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:brasil_fields/brasil_fields.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +31,7 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
   TextEditingController _precoController = TextEditingController();
   TextEditingController _telefoneController = TextEditingController();
   TextEditingController _descricaoController = TextEditingController();
+  BuildContext? _dialogContext;
 
   late Anuncio _anuncio;
 
@@ -302,6 +305,9 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
                         //Salvar campos
                         _formKey.currentState?.save();
 
+                        //Configura dialog context
+                        _dialogContext = context;
+
                         //Salvar anuncio
                         _salvarAnuncio();
                       }
@@ -356,10 +362,49 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
     }
   }
 
+  _abrirDialog(BuildContext context){
+    showDialog
+      (context: context,
+        barrierDismissible: false,
+        builder: (context){
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 20.0),
+                  child: Text("Salvando anúncio..."),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
   _salvarAnuncio() async {
+    _abrirDialog(_dialogContext!);
+
     //Upload imagens no Storage
-    _uploadImagens();
+    await _uploadImagens();
     //Salvar anuncio no Firestore
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? usuarioLogado = auth.currentUser;
+    if(usuarioLogado != null){
+      String idUsuarioLogado = usuarioLogado.uid;
+
+      FirebaseFirestore db = FirebaseFirestore.instance;
+      db.collection("meus_anuncios")
+          .doc(idUsuarioLogado)
+          .collection("anuncios")
+          .doc(_anuncio.id)
+          .set(_anuncio.toMap()).then((_) {
+            Navigator.pop(_dialogContext!);
+        Navigator.pushReplacementNamed(context, "/meus-anuncios");
+      });
+    }else{
+      debugPrint("Usuário indisponível!");
+    }
   }
 
   _uploadImagens() async {

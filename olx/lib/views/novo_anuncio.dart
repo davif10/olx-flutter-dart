@@ -362,11 +362,11 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
     }
   }
 
-  _abrirDialog(BuildContext context){
-    showDialog
-      (context: context,
+  _abrirDialog(BuildContext context) {
+    showDialog(
+        context: context,
         barrierDismissible: false,
-        builder: (context){
+        builder: (context) {
           return AlertDialog(
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -390,19 +390,21 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
     //Salvar anuncio no Firestore
     FirebaseAuth auth = FirebaseAuth.instance;
     User? usuarioLogado = auth.currentUser;
-    if(usuarioLogado != null){
+    if (usuarioLogado != null) {
       String idUsuarioLogado = usuarioLogado.uid;
 
       FirebaseFirestore db = FirebaseFirestore.instance;
-      db.collection("meus_anuncios")
+      db
+          .collection("meus_anuncios")
           .doc(idUsuarioLogado)
           .collection("anuncios")
           .doc(_anuncio.id)
-          .set(_anuncio.toMap()).then((_) {
-            Navigator.pop(_dialogContext!);
-        Navigator.pushReplacementNamed(context, "/meus-anuncios");
+          .set(_anuncio.toMap())
+          .then((_) {
+        Navigator.pop(_dialogContext!);
+        Navigator.pop(context);
       });
-    }else{
+    } else {
       debugPrint("Usuário indisponível!");
     }
   }
@@ -414,17 +416,17 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
     for (var imagem in _listaImagens) {
       Reference arquivo =
           pastaRaiz.child("meus_anuncios").child(_anuncio.id).child(nomeImagem);
-      
+
       UploadTask uploadTask = arquivo.putFile(File(imagem.path));
       TaskSnapshot? taskSnapshot;
       await uploadTask.then((task) {
         taskSnapshot = task;
       });
 
-     if(taskSnapshot != null){
-       String url = await taskSnapshot!.ref.getDownloadURL();
-       _anuncio.fotos.add(url);
-     }
+      if (taskSnapshot != null) {
+        String url = await taskSnapshot!.ref.getDownloadURL();
+        _anuncio.fotos.add(url);
+      }
     }
   }
 }

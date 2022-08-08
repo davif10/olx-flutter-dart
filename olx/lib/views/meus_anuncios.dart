@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:olx/views/widgets/item_anuncio.dart';
 
 class MeusAnuncios extends StatefulWidget {
   const MeusAnuncios({Key? key}) : super(key: key);
@@ -21,7 +22,12 @@ class _MeusAnunciosState extends State<MeusAnuncios> {
           Navigator.pushNamed(context, "/novo-anuncio");
         },
       ),
-      body: Container(),
+      body: ListView.builder(
+        itemCount: 4,
+          itemBuilder: (_, indice){
+            return ItemAnuncio();
+          }
+      ),
     );
   }
 }

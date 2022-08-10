@@ -38,7 +38,7 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
   @override
   void initState() {
     _carregarItensDropDown();
-    _anuncio = Anuncio();
+    _anuncio = Anuncio.gerarId();
 
     super.initState();
   }
@@ -248,7 +248,7 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
                     type: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
-                      RealInputFormatter(moeda: true)
+                      CentavosInputFormatter(moeda: true)
                     ],
                     onSaved: (String? preco) {
                       _anuncio.preco = preco ?? "";

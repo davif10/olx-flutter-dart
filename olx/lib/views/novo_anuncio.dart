@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:olx/models/anuncio.dart';
+import 'package:olx/util/configuracoes.dart';
 import 'package:olx/views/widgets/botao_customizado.dart';
 import 'package:olx/views/widgets/input_customizado.dart';
 import 'package:validadores/Validador.dart';
@@ -332,34 +333,8 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
   }
 
   _carregarItensDropDown() {
-    _listaItensDropCategorias.add(DropdownMenuItem(
-      child: Text("Automóvel"),
-      value: "auto",
-    ));
-    _listaItensDropCategorias.add(DropdownMenuItem(
-      child: Text("Imóvel"),
-      value: "imovel",
-    ));
-    _listaItensDropCategorias.add(DropdownMenuItem(
-      child: Text("Eletrônicos"),
-      value: "eletro",
-    ));
-
-    _listaItensDropCategorias.add(DropdownMenuItem(
-      child: Text("Moda"),
-      value: "moda",
-    ));
-    _listaItensDropCategorias.add(DropdownMenuItem(
-      child: Text("Esportes"),
-      value: "esportes",
-    ));
-
-    for (var estado in Estados.listaEstadosSigla) {
-      _listaItensDropEstados.add(DropdownMenuItem(
-        child: Text(estado),
-        value: estado,
-      ));
-    }
+    _listaItensDropCategorias = Configuracoes.getCategorias();
+    _listaItensDropEstados = Configuracoes.getEstados();
   }
 
   _abrirDialog(BuildContext context) {
@@ -401,8 +376,13 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
           .doc(_anuncio.id)
           .set(_anuncio.toMap())
           .then((_) {
-        Navigator.pop(_dialogContext!);
-        Navigator.pop(context);
+            //Salvar anúncio público
+        db.collection("anuncios")
+        .doc(_anuncio.id)
+        .set(_anuncio.toMap()).then((_) {
+          Navigator.pop(_dialogContext!);
+          Navigator.pop(context);
+        });
       });
     } else {
       debugPrint("Usuário indisponível!");

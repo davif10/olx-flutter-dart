@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../util/configuracoes.dart';
+
 class Anuncios extends StatefulWidget {
   const Anuncios({Key? key}) : super(key: key);
 
@@ -10,10 +12,15 @@ class Anuncios extends StatefulWidget {
 
 class _AnunciosState extends State<Anuncios> {
   List<String> itensMenu = [];
+  String? _itemSelecionadoEstado;
+  String? _itemSelecionadoCategoria;
+  late List<DropdownMenuItem<String>> _listaItensDropCategorias;
+  late List<DropdownMenuItem<String>> _listaItensDropEstados;
 
   @override
   void initState() {
     super.initState();
+    _carregarItensDropDown();
     _verificaUsuarioLogado();
   }
 
@@ -26,24 +33,66 @@ class _AnunciosState extends State<Anuncios> {
         actions: [
           PopupMenuButton(
               onSelected: _escolhaMenuItem,
-              itemBuilder: (context){
-              return itensMenu.map((item) {
-                return PopupMenuItem(
-                    value: item,
-                    child: Text(item)
-                );
-              }).toList();
-          })
+              itemBuilder: (context) {
+                return itensMenu.map((item) {
+                  return PopupMenuItem(value: item, child: Text(item));
+                }).toList();
+              })
         ],
       ),
       body: Container(
-        child: Text("Anuncios"),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                    child: DropdownButtonHideUnderline(
+                  child: Center(
+                    child: DropdownButton(
+                      value: _itemSelecionadoEstado,
+                      items: _listaItensDropEstados,
+                      style: TextStyle(fontSize: 22, color: Colors.black),
+                      iconEnabledColor: Color(0xff9c27b0),
+                      onChanged: (String? estado) {
+                        setState((){
+                          _itemSelecionadoEstado = estado;
+                        });
+                      },
+                    ),
+                  ),
+                )),
+                Container(color: Colors.grey[200], width: 2, height: 60,),
+                Expanded(
+                    child: DropdownButtonHideUnderline(
+                      child: Center(
+                        child: DropdownButton(
+                          value: _itemSelecionadoCategoria,
+                          items: _listaItensDropCategorias,
+                          iconEnabledColor: Color(0xff9c27b0),
+                          style: TextStyle(fontSize: 22, color: Colors.black),
+                          onChanged: (String? categoria) {
+                            setState((){
+                              _itemSelecionadoCategoria = categoria;
+                            });
+                          },
+                        ),
+                      ),
+                    ))
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
 
-  _escolhaMenuItem(String itemEscolhido){
-    switch(itemEscolhido){
+  _carregarItensDropDown() {
+    _listaItensDropCategorias = Configuracoes.getCategorias();
+    _listaItensDropEstados = Configuracoes.getEstados();
+  }
+
+  _escolhaMenuItem(String itemEscolhido) {
+    switch (itemEscolhido) {
       case "Meus anúncios":
         Navigator.pushNamed(context, "/meus-anuncios");
         break;
@@ -56,22 +105,17 @@ class _AnunciosState extends State<Anuncios> {
     }
   }
 
-  Future _verificaUsuarioLogado() async{
+  Future _verificaUsuarioLogado() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     User? usuarioLogado = await auth.currentUser;
-    if(usuarioLogado == null){
-      itensMenu = [
-          "Entrar / Cadastrar"
-      ];
-    }else{
-      itensMenu = [
-        "Meus anúncios",
-        "Deslogar"
-      ];
+    if (usuarioLogado == null) {
+      itensMenu = ["Entrar / Cadastrar"];
+    } else {
+      itensMenu = ["Meus anúncios", "Deslogar"];
     }
   }
-  
-  _deslogarUsuario() async{
+
+  _deslogarUsuario() async {
     FirebaseAuth auth = FirebaseAuth.instance;
     await auth.signOut();
 

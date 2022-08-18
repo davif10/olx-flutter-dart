@@ -16,8 +16,8 @@ class Configuracoes{
       value: "auto",
     ));
     itensDrogCategorias.add(DropdownMenuItem(
-      child: Text("Imóvel"),
-      value: "imovel",
+      child: Text("Comida"),
+      value: "comida",
     ));
     itensDrogCategorias.add(DropdownMenuItem(
       child: Text("Eletrônicos"),

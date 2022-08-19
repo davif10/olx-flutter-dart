@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:olx/views/widgets/item_anuncio.dart';
 
+import '../models/anuncio.dart';
 import '../util/configuracoes.dart';
 
 class Anuncios extends StatefulWidget {
@@ -16,12 +21,14 @@ class _AnunciosState extends State<Anuncios> {
   String? _itemSelecionadoCategoria;
   late List<DropdownMenuItem<String>> _listaItensDropCategorias;
   late List<DropdownMenuItem<String>> _listaItensDropEstados;
+  final _controller = StreamController<QuerySnapshot>.broadcast();
 
   @override
   void initState() {
     super.initState();
     _carregarItensDropDown();
     _verificaUsuarioLogado();
+    _adicionarListenerAnuncios();
   }
 
   @override
@@ -54,36 +61,90 @@ class _AnunciosState extends State<Anuncios> {
                       style: TextStyle(fontSize: 22, color: Colors.black),
                       iconEnabledColor: Color(0xff9c27b0),
                       onChanged: (String? estado) {
-                        setState((){
+                        setState(() {
                           _itemSelecionadoEstado = estado;
                         });
                       },
                     ),
                   ),
                 )),
-                Container(color: Colors.grey[200], width: 2, height: 60,),
+                Container(
+                  color: Colors.grey[200],
+                  width: 2,
+                  height: 60,
+                ),
                 Expanded(
                     child: DropdownButtonHideUnderline(
-                      child: Center(
-                        child: DropdownButton(
-                          value: _itemSelecionadoCategoria,
-                          items: _listaItensDropCategorias,
-                          iconEnabledColor: Color(0xff9c27b0),
-                          style: TextStyle(fontSize: 22, color: Colors.black),
-                          onChanged: (String? categoria) {
-                            setState((){
-                              _itemSelecionadoCategoria = categoria;
-                            });
-                          },
-                        ),
-                      ),
-                    ))
+                  child: Center(
+                    child: DropdownButton(
+                      value: _itemSelecionadoCategoria,
+                      items: _listaItensDropCategorias,
+                      iconEnabledColor: Color(0xff9c27b0),
+                      style: TextStyle(fontSize: 22, color: Colors.black),
+                      onChanged: (String? categoria) {
+                        setState(() {
+                          _itemSelecionadoCategoria = categoria;
+                        });
+                      },
+                    ),
+                  ),
+                ))
               ],
+            ),
+            StreamBuilder(
+              stream: _controller.stream,
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.none:
+                  case ConnectionState.waiting:
+                  case ConnectionState.active:
+                  case ConnectionState.done:
+                    QuerySnapshot? querySnapshot =
+                        snapshot.data as QuerySnapshot?;
+                    if (querySnapshot == null ||
+                        querySnapshot.docs.length == 0) {
+                      return Container(
+                        padding: EdgeInsets.all(25),
+                        child: Text(
+                          "Nenhum anúncio! :(",
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      );
+                    }
+
+                    return Expanded(
+                        child: ListView.builder(
+                            itemCount: querySnapshot.docs.length,
+                            itemBuilder: (_, indice) {
+                              List<DocumentSnapshot> anuncios =
+                                  querySnapshot.docs.toList();
+                              DocumentSnapshot documentSnapshot =
+                                  anuncios[indice];
+                              Anuncio anuncio =
+                                  Anuncio.fromDocumentSnaphot(documentSnapshot);
+
+                              return ItemAnuncio(
+                                anuncio: anuncio,
+                                onTapItem: () {},
+                              );
+                            }));
+                }
+              },
             )
           ],
         ),
       ),
     );
+  }
+
+  _adicionarListenerAnuncios() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    Stream<QuerySnapshot> stream = db.collection("anuncios").snapshots();
+
+    stream.listen((dados) {
+      _controller.add(dados);
+    });
   }
 
   _carregarItensDropDown() {

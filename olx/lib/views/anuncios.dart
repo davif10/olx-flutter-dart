@@ -63,6 +63,7 @@ class _AnunciosState extends State<Anuncios> {
                       onChanged: (String? estado) {
                         setState(() {
                           _itemSelecionadoEstado = estado;
+                          _filtrarAnuncios();
                         });
                       },
                     ),
@@ -84,6 +85,7 @@ class _AnunciosState extends State<Anuncios> {
                       onChanged: (String? categoria) {
                         setState(() {
                           _itemSelecionadoCategoria = categoria;
+                          _filtrarAnuncios();
                         });
                       },
                     ),
@@ -142,6 +144,25 @@ class _AnunciosState extends State<Anuncios> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     Stream<QuerySnapshot> stream = db.collection("anuncios").snapshots();
 
+    stream.listen((dados) {
+      _controller.add(dados);
+    });
+  }
+
+  _filtrarAnuncios() async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    Query query = db.collection("anuncios");
+
+    if(_itemSelecionadoEstado != null){
+      query = query.where("estado", isEqualTo: _itemSelecionadoEstado);
+    }
+
+    if(_itemSelecionadoCategoria != null){
+      query = query.where("categoria", isEqualTo: _itemSelecionadoCategoria);
+    }
+
+
+    Stream<QuerySnapshot> stream = query.snapshots();
     stream.listen((dados) {
       _controller.add(dados);
     });

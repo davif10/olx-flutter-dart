@@ -392,8 +392,8 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
   _uploadImagens() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference pastaRaiz = storage.ref();
-    String nomeImagem = DateTime.now().millisecondsSinceEpoch.toString();
     for (var imagem in _listaImagens) {
+      String nomeImagem = DateTime.now().millisecondsSinceEpoch.toString();
       Reference arquivo =
           pastaRaiz.child("meus_anuncios").child(_anuncio.id).child(nomeImagem);
 

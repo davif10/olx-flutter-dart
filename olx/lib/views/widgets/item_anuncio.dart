@@ -31,7 +31,12 @@ class ItemAnuncio extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(anuncio.titulo, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                        Text("${anuncio.preco}")
+                        Text("${anuncio.preco}"),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text("Região: ${anuncio.estado}",
+                              style: TextStyle(color: Colors.grey, fontSize: 12, fontWeight: FontWeight.bold)),
+                        )
                       ],
                     ),
                   )),

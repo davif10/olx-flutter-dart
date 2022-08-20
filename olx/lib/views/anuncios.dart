@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:olx/main.dart';
 import 'package:olx/views/widgets/item_anuncio.dart';
 
 import '../models/anuncio.dart';
@@ -22,6 +23,11 @@ class _AnunciosState extends State<Anuncios> {
   late List<DropdownMenuItem<String>> _listaItensDropCategorias;
   late List<DropdownMenuItem<String>> _listaItensDropEstados;
   final _controller = StreamController<QuerySnapshot>.broadcast();
+  var carregandoDados = Center(
+    child: Column(
+      children: [Text("Carregando anúncios"), CircularProgressIndicator()],
+    ),
+  );
 
   @override
   void initState() {
@@ -59,7 +65,7 @@ class _AnunciosState extends State<Anuncios> {
                       value: _itemSelecionadoEstado,
                       items: _listaItensDropEstados,
                       style: TextStyle(fontSize: 22, color: Colors.black),
-                      iconEnabledColor: Color(0xff9c27b0),
+                      iconEnabledColor: temaPadrao.primaryColor,
                       onChanged: (String? estado) {
                         setState(() {
                           _itemSelecionadoEstado = estado;
@@ -80,7 +86,7 @@ class _AnunciosState extends State<Anuncios> {
                     child: DropdownButton(
                       value: _itemSelecionadoCategoria,
                       items: _listaItensDropCategorias,
-                      iconEnabledColor: Color(0xff9c27b0),
+                      iconEnabledColor: temaPadrao.primaryColor,
                       style: TextStyle(fontSize: 22, color: Colors.black),
                       onChanged: (String? categoria) {
                         setState(() {
@@ -99,6 +105,7 @@ class _AnunciosState extends State<Anuncios> {
                 switch (snapshot.connectionState) {
                   case ConnectionState.none:
                   case ConnectionState.waiting:
+                    return carregandoDados;
                   case ConnectionState.active:
                   case ConnectionState.done:
                     QuerySnapshot? querySnapshot =
@@ -128,7 +135,11 @@ class _AnunciosState extends State<Anuncios> {
 
                               return ItemAnuncio(
                                 anuncio: anuncio,
-                                onTapItem: () {},
+                                onTapItem: () {
+                                  Navigator.pushNamed(
+                                      context, "/detalhes-anuncio",
+                                      arguments: anuncio);
+                                },
                               );
                             }));
                 }
@@ -153,14 +164,13 @@ class _AnunciosState extends State<Anuncios> {
     FirebaseFirestore db = FirebaseFirestore.instance;
     Query query = db.collection("anuncios");
 
-    if(_itemSelecionadoEstado != null){
+    if (_itemSelecionadoEstado != null) {
       query = query.where("estado", isEqualTo: _itemSelecionadoEstado);
     }
 
-    if(_itemSelecionadoCategoria != null){
+    if (_itemSelecionadoCategoria != null) {
       query = query.where("categoria", isEqualTo: _itemSelecionadoCategoria);
     }
-
 
     Stream<QuerySnapshot> stream = query.snapshots();
     stream.listen((dados) {

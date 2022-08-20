@@ -1,6 +1,8 @@
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 class Configuracoes{
 
   static List<DropdownMenuItem<String>> getCategorias(){
@@ -8,7 +10,7 @@ class Configuracoes{
     List<DropdownMenuItem<String>> itensDrogCategorias = [];
 
     itensDrogCategorias.add(DropdownMenuItem(
-      child: Text("Categoria", style: TextStyle(color: Color(0xff9c27b0)),),
+      child: Text("Categoria", style: TextStyle(color: temaPadrao.primaryColor),),
       value: null,
     ));
     itensDrogCategorias.add(DropdownMenuItem(
@@ -41,7 +43,7 @@ class Configuracoes{
     List<DropdownMenuItem<String>> itensDrogRegiao = [];
 
     itensDrogRegiao.add(DropdownMenuItem(
-      child: Text("Região", style: TextStyle(color: Color(0xff9c27b0)),),
+      child: Text("Região", style: TextStyle(color: temaPadrao.primaryColor),),
       value: null,
     ));
 

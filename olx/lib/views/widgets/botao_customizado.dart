@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../main.dart';
+
 class BotaoCustomizado extends StatelessWidget {
   const BotaoCustomizado(
       {Key? key,
@@ -17,7 +19,7 @@ class BotaoCustomizado extends StatelessWidget {
     return TextButton(
         onPressed: this.onPressed,
         style: TextButton.styleFrom(
-            backgroundColor: Color(0xff9c27b0),
+            backgroundColor: temaPadrao.primaryColor,
             padding: EdgeInsets.fromLTRB(32, 16, 32, 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(6)

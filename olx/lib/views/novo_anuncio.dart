@@ -105,38 +105,7 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 8),
                                     child: GestureDetector(
-                                      onTap: () {
-                                        showDialog(
-                                            context: context,
-                                            builder: (context) => Dialog(
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      Image.file(File(
-                                                          _listaImagens[index]
-                                                              .path)),
-                                                      TextButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _listaImagens
-                                                                  .removeAt(
-                                                                      index);
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop();
-                                                            });
-                                                          },
-                                                          child: Text(
-                                                            "Excluir",
-                                                            style: TextStyle(
-                                                                color:
-                                                                    Colors.red),
-                                                          ))
-                                                    ],
-                                                  ),
-                                                ));
-                                      },
+                                      onTap: () => _dialogRemover(index),
                                       child: CircleAvatar(
                                         radius: 50,
                                         backgroundImage: FileImage(
@@ -252,7 +221,10 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
                       CentavosInputFormatter(moeda: true)
                     ],
                     onSaved: (String? preco) {
-                      _anuncio.preco = preco ?? "";
+                      if(preco == null){
+                        preco = "0";
+                      }
+                      _anuncio.preco = preco.replaceAll("R\$", "");
                     },
                     validator: (value) {
                       return Validador()
@@ -321,6 +293,30 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
     );
   }
 
+  _dialogRemover(int index) {
+    showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.file(File(_listaImagens[index].path)),
+                  TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _listaImagens.removeAt(index);
+                          Navigator.of(context).pop();
+                        });
+                      },
+                      child: Text(
+                        "Excluir",
+                        style: TextStyle(color: Colors.red),
+                      ))
+                ],
+              ),
+            ));
+  }
+
   _selecionarImagemGaleria() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? imagemSelecionada =
@@ -376,10 +372,12 @@ class _NovoAnuncioState extends State<NovoAnuncio> {
           .doc(_anuncio.id)
           .set(_anuncio.toMap())
           .then((_) {
-            //Salvar anúncio público
-        db.collection("anuncios")
-        .doc(_anuncio.id)
-        .set(_anuncio.toMap()).then((_) {
+        //Salvar anúncio público
+        db
+            .collection("anuncios")
+            .doc(_anuncio.id)
+            .set(_anuncio.toMap())
+            .then((_) {
           Navigator.pop(_dialogContext!);
           Navigator.pop(context);
         });

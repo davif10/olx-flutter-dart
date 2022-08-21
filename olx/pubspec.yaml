@@ -36,6 +36,7 @@ dependencies:
   brasil_fields: ^1.4.5
   validadores: ^1.0.5
   carousel_slider: ^4.1.1
+  url_launcher: ^6.1.5
 
 dev_dependencies:
   flutter_test:

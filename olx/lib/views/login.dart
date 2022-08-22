@@ -75,6 +75,12 @@ class _LoginState extends State<Login> {
                 BotaoCustomizado(texto: _textoBotao, onPressed: (){
                   _validarCampos();
                 }),
+
+                TextButton(
+                    onPressed: (){
+                      Navigator.pushReplacementNamed(context, "/");
+                    },
+                    child: Text("Ir para anúncios")),
                 Padding(
                   padding: EdgeInsets.only(top: 20),
                   child: Text(

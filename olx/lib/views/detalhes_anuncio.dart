@@ -181,7 +181,7 @@ class _DetalhesAnuncioState extends State<DetalhesAnuncio> {
         height: 250,
         decoration: BoxDecoration(
             image:
-                DecorationImage(image: NetworkImage(url), fit: BoxFit.cover)),
+                DecorationImage(image: NetworkImage(url), fit: BoxFit.scaleDown)),
       );
     }).toList();
   }
